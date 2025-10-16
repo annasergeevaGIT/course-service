@@ -1,0 +1,1 @@
+CREATE DATABASE course_service_db;

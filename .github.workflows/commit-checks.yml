@@ -1,0 +1,29 @@
+name: Commit Checks # name of our workflow
+on: # Triggers for the workflow (on push and pull-request to the master branch.)
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs: # list of tasks (jobs) that will be executed as part of the workflow
+  build-and-test: # describing the build and test process of the project
+    name: Building and Testing the app
+    runs-on: ubuntu-22.04 # defining the runner of the process - a virtual machine ubuntu-22.04
+    steps: #defining the steps that need to be performed in this job
+      - name: Checkout # first we copy the repository to the virtual machine using
+        # an action available on Github Marketplace https://github.com/marketplace/actions/checkout
+        uses: actions/checkout@v4
+      - name: Setup JDK # we set up the working environment - JVM temurin with Java 17 and Gradle
+        # For this, we also use an action from Github Marketplace
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+      - name: build, tests # The step at which the project will be built and tested.
+          # We describe it using commands that will be executed on the ubuntu-22.04 virtual machine
+        run: |
+          chmod +x gradlew
+          ./gradlew build

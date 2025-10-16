@@ -1,0 +1,6 @@
+#application-test.yml
+#jdbc connection config for testcontainers
+spring.datasource.driver-class-name=org.testcontainers.jdbc.ContainerDatabaseDriver
+spring.datasource.url=jdbc:tc:postgresql:16.1:///test_database
+spring.datasource.username=user
+spring.datasource.password=password

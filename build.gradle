@@ -1,0 +1,73 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.5.6'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'at'
+version = '0.0.1-SNAPSHOT'
+description = 'e-learning-platform'
+
+java {
+	sourceCompatibility = '21'
+}
+
+jar {
+	enabled = false
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+ext {
+	jpaModelGenVersion = '6.5.0.Final' // generates metadata about JPA entities for typesafe criteria queries ./gradlew assemble -> Course_
+	hypersistenceVersion = '3.7.5'  // JSONB support, utilities for performance optimization and query building
+	mapstructVersion = '1.5.5.Final'  // for mapping DTOs
+	mapstructLombokBindingVersion = '0.2.0'  // to avoid conflicts between MapStruct and Lombok
+	springdocVersion = '2.5.0'  // for generating OpenAPI documentation and Swagger UI integration http://localhost:8081/api-docs
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'//
+	implementation "io.hypersistence:hypersistence-utils-hibernate-63:${hypersistenceVersion}"
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor "org.hibernate:hibernate-jpamodelgen:${jpaModelGenVersion}"
+	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	annotationProcessor "org.projectlombok:lombok-mapstruct-binding:${mapstructLombokBindingVersion}"
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webflux'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'//
+}
+
+//runnable Docker image without writing a Dockerfile manually.
+bootBuildImage {
+	imageName = "${project.name}"
+	environment = ["BP_JVM_VERSION": "21.*"]
+	docker {
+		host = "//./pipe/dockerDesktopLinuxEngine"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

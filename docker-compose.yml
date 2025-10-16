@@ -1,0 +1,34 @@
+services:
+  course-service:
+    image: "course-service"
+    container_name: "course-service"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/course_service_db
+# ctrl/ for multiline comment
+# shift Tab or Tab for indent/unindent - move left or right
+  postgres:
+    image: "postgres:16.1"
+    container_name: "e-learning-postgres"
+    ports:
+      - "25432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "course_service_db" ]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s
+
+volumes:
+    db:
+        driver: local
