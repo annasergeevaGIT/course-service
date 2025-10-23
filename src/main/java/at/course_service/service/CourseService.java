@@ -11,5 +11,5 @@ public interface CourseService {
     CourseDto updateCourse(Long id, UpdateCourseRequest course);
     CourseDto getCourse(Long id);
     List<CourseDto> getCoursesFor(Category category, SortBy sortBy);
-    OrderCourseResponse getCoursesForOrder(OrderCourseRequest request);
+    EnrollmentCourseResponse getCoursesForEnrollment(EnrollmentCourseRequest request);
 }

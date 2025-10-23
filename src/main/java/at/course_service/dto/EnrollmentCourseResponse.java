@@ -6,10 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderCourseResponse {
+public class EnrollmentCourseResponse {
     private List<CourseInfo> courseInfos;
 }

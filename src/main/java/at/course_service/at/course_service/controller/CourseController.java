@@ -161,8 +161,8 @@ public class CourseController {
             )
     })
     @PostMapping("/course-info") // A payload (body) within a GET request message has no defined semantics; sending a payload body on a GET request might cause some existing implementations to reject the request.
-    public OrderCourseResponse getCoursesForOrder(@RequestBody @Valid OrderCourseRequest request) {
+    public EnrollmentCourseResponse getCoursesForEnrollment(@RequestBody @Valid EnrollmentCourseRequest request) {
         log.info("Received request to GET course info with names: {}", request.getCourseNames());
-        return courseService.getCoursesForOrder(request);
+        return courseService.getCoursesForEnrollment(request);
     }
 }

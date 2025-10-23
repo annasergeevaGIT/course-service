@@ -71,16 +71,16 @@ public class CourseServiceImpl implements CourseService {
 
     /**
      * Builds a response with detailed information for the requested courses.
-     * For each course name in the {@link OrderCourseRequest}, this method checks
+     * For each course name in the {@link EnrollmentCourseRequest}, this method checks
      * if it exists in the database and collects its name, price, and availability status.
      * The response preserves the order of requested courses and includes missing ones
      * with {@code null} prices and {@code available = false}.
      *
      * @param request the request containing the list of course names
-     * @return an {@link OrderCourseResponse} with course information and availability
+     * @return an {@link EnrollmentCourseResponse} with course information and availability
      */
     @Override
-    public OrderCourseResponse getCoursesForOrder(OrderCourseRequest request) {
+    public EnrollmentCourseResponse getCoursesForEnrollment(EnrollmentCourseRequest request) {
         Map<String, CourseProjection> nameToProjection = repository.getCourseInfoForNames(request.getCourseNames())
                 .stream()
                 .collect(Collectors.toMap(CourseProjection::getName, Function.identity())); // map of course name to its projection
@@ -93,6 +93,6 @@ public class CourseServiceImpl implements CourseService {
                 courseInfos.add(new CourseInfo(courseName, null, false));
             }
         }
-        return OrderCourseResponse.builder().courseInfos(courseInfos).build();
+        return EnrollmentCourseResponse.builder().courseInfos(courseInfos).build();
     }
 }

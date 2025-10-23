@@ -12,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderCourseRequest {
+public class EnrollmentCourseRequest {
     @NotEmpty(message = "The list of course names must not be empty.")
     private Set<String> courseNames;
 }

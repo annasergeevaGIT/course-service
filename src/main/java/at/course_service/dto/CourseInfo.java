@@ -4,11 +4,11 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@Getter
+@Setter
 @ToString
 public class CourseInfo {
     private String name;

@@ -21,7 +21,8 @@ public class CreateCourseRequest { //received incoming data, dto for creating a 
     @NotBlank(message = "Description should not be empty")
     private String description;
 
-    @NullOrNotBlank(message = "Price should not be empty")
+    @NotNull(message = "Price should not be empty")
+    @Positive(message = "Price must be > 0.")
     private BigDecimal price;
 
     @NotNull(message = "Category should not be null")
