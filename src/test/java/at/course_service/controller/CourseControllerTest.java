@@ -85,7 +85,7 @@ public class CourseControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void createCourse_returnsConflict_whenMenuWithThatNameInDb() {
+    void createCourse_returnsConflict_whenCourseWithThatNameInDb() {
         var dto = createCourseRequest();
         dto.setName("Java Basics");
 

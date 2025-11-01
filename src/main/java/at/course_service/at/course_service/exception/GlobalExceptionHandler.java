@@ -21,7 +21,7 @@ import java.util.Map;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     /** recommendations for exception handling: https://datatracker.ietf.org/doc/html/rfc7807
-     * triggered when the service throws a [MenuServiceException]
+     * triggered when the service throws a [CourseServiceException]
      */
     @ExceptionHandler(CourseServiceException.class)
     public ProblemDetail handleCourseServiceException(CourseServiceException ex, WebRequest request) {

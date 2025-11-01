@@ -8,22 +8,23 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/course_service_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:6431/course_service_db
 # ctrl/ for multiline comment
 # shift Tab or Tab for indent/unindent - move left or right
   postgres:
     image: "postgres:16.1"
-    container_name: "e-learning-postgres"
+    container_name: "postgres-courses"
     ports:
-      - "25432:5432"
+      - "6431:6431"
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
+      - PGPORT=6431
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - db:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "-d", "course_service_db" ]
+      test: [ "CMD-SHELL", "pg_isready", "-p", "6431", "-d", "course_service_db" ]
       interval: 30s
       timeout: 60s
       retries: 5

@@ -7,10 +7,10 @@ This microservice manages courses for the E-Learning Platform
 | Service | Description |
 |----------|--------------|
 | [Enrollment Service](https://github.com/annasergeevaGIT/enrollment-service) | Handles student enrollments |
-| [Review Service](https://github.com/annasergeevaGIT/review-service) | Manages course reviews |
-| [Course Aggregate Service](../course-aggregate-service) | Aggregates course and review data |
+| [Feedback Service](https://github.com/annasergeevaGIT/feedback-service) | Manages user feedback|
+| [Course Aggregate Service](https://github.com/annasergeevaGIT/course-aggregate-service) | Aggregates course and review data |
 | [Gateway Service](../gateway-service) | Routes requests to microservices |
-| [Config Server](../config-server) | Centralized configuration storage |
+| [Config Server](https://github.com/annasergeevaGIT/config-server-e-learning-platform) | Centralized configuration storage |
 
 ## Overview
 
@@ -43,6 +43,7 @@ This allows direct comparison of scalability and performance between the two con
 - **Java 21**
 - **Spring Boot 3**
 - **PostgreSQL**
+- **Flyway (DB migrations)**
 - **Kafka**
 - **Micrometer / Prometheus**
 - **Eureka Discovery**
@@ -51,5 +52,6 @@ This allows direct comparison of scalability and performance between the two con
 ## Build & Run
 
 ```bash
+./gradlew clean bootBuildImage
 docker-compose up -d
-./gradlew bootRun
+./gradlew test
