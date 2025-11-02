@@ -1,30 +1,52 @@
 services:
+  config-server-e-learning-platform:
+    image: "config-server-e-learning-platform"
+    container_name: "config-server-e-learning-platform"
+    environment:
+      - THC_PATH=/actuator/health
+      - THC_PORT=8085
+    ports:
+      - "8085:8085"
+    healthcheck:
+      test: [ "CMD", "/cnb/process/health-check" ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
   course-service:
     image: "course-service"
     container_name: "course-service"
     depends_on:
       postgres:
         condition: service_healthy
+      config-server-e-learning-platform:
+        condition: service_healthy
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:6431/course_service_db
+      - CONFIGSERVER_IMPORT=configserver:${CONFIG_SERVER_URL}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=true
+      - SPRING_PROFILES_ACTIVE=prod
+      - DB_URL=${COURSE_DB_URL}
+      - DB_USER=${COURSE_DB_USER}
+      - DB_PASSWORD=${COURSE_DB_PASSWORD}
 # ctrl/ for multiline comment
 # shift Tab or Tab for indent/unindent - move left or right
   postgres:
     image: "postgres:16.1"
-    container_name: "postgres-courses"
+    container_name: "postgres-c"
     ports:
       - "6431:6431"
     environment:
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=${COURSE_DB_USER}
+      - POSTGRES_PASSWORD=${COURSE_DB_PASSWORD}
       - PGPORT=6431
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - db:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "-p", "6431", "-d", "course_service_db" ]
+      test: [ "CMD-SHELL", "pg_isready", "-d", "course_service_db" ]
       interval: 30s
       timeout: 60s
       retries: 5
