@@ -4,9 +4,9 @@ services:
     container_name: "config-server-e-learning-platform"
     environment:
       - THC_PATH=/actuator/health
-      - THC_PORT=8085
+      - THC_PORT=9095
     ports:
-      - "8085:8085"
+      - "9095:9095"
     healthcheck:
       test: [ "CMD", "/cnb/process/health-check" ]
       interval: 15s
@@ -23,7 +23,7 @@ services:
       config-server-e-learning-platform:
         condition: service_healthy
     ports:
-      - "8081:8081"
+      - "9091:9091"
     environment:
       - CONFIGSERVER_IMPORT=configserver:${CONFIG_SERVER_URL}
       - SPRING_CLOUD_CONFIG_FAIL_FAST=true
@@ -31,17 +31,31 @@ services:
       - DB_URL=${COURSE_DB_URL}
       - DB_USER=${COURSE_DB_USER}
       - DB_PASSWORD=${COURSE_DB_PASSWORD}
-# ctrl/ for multiline comment
-# shift Tab or Tab for indent/unindent - move left or right
+      - DISCOVERY_SERVICE_URL=${DISCOVERY_SERVICE_URL}
+
+  discovery-service:
+    image: "discovery-service"
+    container_name: "discovery-service"
+    ports:
+      - "8761:8761"
+    depends_on:
+      config-server-e-learning-platform:
+        condition: service_healthy
+    environment:
+      - CONFIGSERVER_IMPORT=configserver:${CONFIG_SERVER_URL}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=true
+      - SPRING_PROFILES_ACTIVE=prod
+      - EUREKA_HOSTNAME=discovery-service
+
   postgres:
     image: "postgres:16.1"
-    container_name: "postgres-c"
+    container_name: "postgres"
     ports:
-      - "6431:6431"
+      - "5431:5431"
     environment:
       - POSTGRES_USER=${COURSE_DB_USER}
       - POSTGRES_PASSWORD=${COURSE_DB_PASSWORD}
-      - PGPORT=6431
+      - PGPORT=5431
     volumes:
       - ./postgresql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - db:/var/lib/postgresql/data
@@ -54,4 +68,4 @@ services:
 
 volumes:
     db:
-        driver: local
+      driver: local
