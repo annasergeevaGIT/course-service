@@ -33,6 +33,7 @@ ext {
 	mapstructLombokBindingVersion = '0.2.0'  // to avoid conflicts between MapStruct and Lombok
 	springdocVersion = '2.5.0'  // for generating OpenAPI documentation and Swagger UI integration http://localhost:8081/api-docs
 	springCloudVersion = '2025.0.0'  // Config Server Client connection
+	lokiAppenderVersion = '2.0.1'
 }
 
 dependencies {
@@ -52,6 +53,8 @@ dependencies {
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	runtimeOnly "com.github.loki4j:loki-logback-appender:${lokiAppenderVersion}"
 	annotationProcessor "org.hibernate:hibernate-jpamodelgen:${jpaModelGenVersion}"
 	annotationProcessor 'org.projectlombok:lombok'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
