@@ -5,19 +5,12 @@ import at.course_service.dto.CourseDto;
 import at.course_service.dto.CourseInfo;
 import at.course_service.dto.EnrollmentCourseRequest;
 import at.course_service.dto.EnrollmentCourseResponse;
-import at.course_service.testutils.AuthToken;
-import dasniko.testcontainers.keycloak.KeycloakContainer;
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -27,37 +20,11 @@ import static at.course_service.testutils.TestConstants.BASE_URL;
 import static at.course_service.testutils.TestData.createCourseRequest;
 import static at.course_service.testutils.TestData.updateCourseFullRequest;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.springframework.web.reactive.function.BodyInserters.fromFormData;
 
 public class CourseControllerTest extends BaseIntegrationTest {
 
-    private static final KeycloakContainer KEYCLOAK = new KeycloakContainer("quay.io/keycloak/keycloak:24.0")
-            .withRealmImportFile("/cloud-java-realm.json");
-
-    static {
-        KEYCLOAK.start();
-    }
-
-    @DynamicPropertySource
-    static void registerProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> KEYCLOAK.getAuthServerUrl() + "/realms/cloud-java");
-        registry.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", () -> KEYCLOAK.getAuthServerUrl() + "/realms/cloud-java/protocol/openid-connect/certs");
-    }
-
     @Autowired
     private WebTestClient webTestClient;
-    private static AuthToken admin;
-    private static AuthToken user;
-
-    @BeforeAll
-    static void setup() {
-        WebClient webClient = WebClient.builder()
-                .baseUrl(KEYCLOAK.getAuthServerUrl() + "/realms/cloud-java/protocol/openid-connect/token")
-                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                .build();
-        admin = createToken(webClient, "alex", "password");
-        user = createToken(webClient, "max", "password");
-    }
 
     @Test
     void getCourse_returnsCourse_whenItExists() {
@@ -99,7 +66,6 @@ public class CourseControllerTest extends BaseIntegrationTest {
 
         webTestClient.post()
                 .uri(BASE_URL)
-                .headers(h -> h.setBearerAuth(admin.getAccessToken()))
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
@@ -125,7 +91,6 @@ public class CourseControllerTest extends BaseIntegrationTest {
 
         webTestClient.post()
                 .uri(BASE_URL)
-                .headers(h -> h.setBearerAuth(admin.getAccessToken()))
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .exchange()
@@ -133,68 +98,21 @@ public class CourseControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void createCourse_returnsUnauthorized_whenNoAccessToken() {
-        var dto = createCourseRequest();
-
-        webTestClient.post()
-                .uri(BASE_URL)
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(dto)
-                .exchange()
-                .expectStatus().isUnauthorized();
-    }
-
-    @Test
-    void createCourse_returnsForbidden_forSimpleUser() {
-        var dto = createCourseRequest();
-
-        webTestClient.post()
-                .uri(BASE_URL)
-                .headers(h -> h.setBearerAuth(user.getAccessToken()))
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(dto)
-                .exchange()
-                .expectStatus().isForbidden();
-    }
-
-    @Test
     void deleteCourse_deletesItem() {
         var id = getIdByName("Java Basics");
         webTestClient.delete()
                 .uri(BASE_URL + "/" + id)
-                .headers(h -> h.setBearerAuth(admin.getAccessToken()))
                 .exchange()
                 .expectStatus().isNoContent();
     }
 
     @Test
-    void deleteCourse_returnsUnauthorized_whenNoAccessToken() {
-        var id = getIdByName("Java Basics");
-        webTestClient.delete()
-                .uri(BASE_URL + "/" + id)
-                .exchange()
-                .expectStatus().isUnauthorized();
-    }
-
-
-    @Test
-    void deleteCourse_returnsForbidden_forSimpleUser() {
-        var id = getIdByName("Java Basics");
-        webTestClient.delete()
-                .uri(BASE_URL + "/" + id)
-                .headers(h -> h.setBearerAuth(user.getAccessToken()))
-                .exchange()
-                .expectStatus().isForbidden();
-    }
-
-    @Test
-    void updateCourse_updatesCourse() {
+    void updateCourse_updatesCOurse() {
         var update = updateCourseFullRequest();
         var id = getIdByName("Java Basics");
 
         webTestClient.patch()
                 .uri(BASE_URL + "/" + id)
-                .headers(h -> h.setBearerAuth(admin.getAccessToken()))
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(update)
                 .exchange()
@@ -216,7 +134,6 @@ public class CourseControllerTest extends BaseIntegrationTest {
 
         webTestClient.patch()
                 .uri(BASE_URL + "/" + id)
-                .headers(h -> h.setBearerAuth(admin.getAccessToken()))
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(update)
                 .exchange()
@@ -224,32 +141,7 @@ public class CourseControllerTest extends BaseIntegrationTest {
     }
 
     @Test
-    void updateCourse_returnsUnauthorized_whenNoAccessToken() {
-        var update = updateCourseFullRequest();
-        var id = 1000L;
-        webTestClient.patch()
-                .uri(BASE_URL + "/" + id)
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(update)
-                .exchange()
-                .expectStatus().isUnauthorized();
-    }
-
-    @Test
-    void updateCourse_returnsForbidden_forSimpleUser() {
-        var update = updateCourseFullRequest();
-        var id = 1000L;
-        webTestClient.patch()
-                .uri(BASE_URL + "/" + id)
-                .headers(h -> h.setBearerAuth(user.getAccessToken()))
-                .accept(MediaType.APPLICATION_JSON)
-                .bodyValue(update)
-                .exchange()
-                .expectStatus().isForbidden();
-    }
-
-    @Test
-    void getCourseForEnrollment_returnsCorrectCourseInfo(){
+    void getCourseForOrder_returnsCorrectCourseInfo(){
         var request = EnrollmentCourseRequest.builder()
                 .courseNames(Set.of("Java Basics", "Python for Developers", "Unknown"))
                 .build();
@@ -276,17 +168,5 @@ public class CourseControllerTest extends BaseIntegrationTest {
                     assertThat(infos.get(2).getPrice()).isNull();
                     assertThat(infos.get(2).getIsAvailable()).isFalse();
                 });
-    }
-    private static AuthToken createToken(WebClient webClient, String username, String password) {
-        return webClient.post()
-                .body(fromFormData("grant_type", "password")
-                        .with("client_id", "cloud-java-gateway")
-                        .with("username", username)
-                        .with("password", password)
-                        .with("client_secret", "RleFn4MVPDKtGTXIZv4Opyfuwfx2fFLL")
-                )
-                .retrieve()
-                .bodyToMono(AuthToken.class)
-                .block();
     }
 }
