@@ -4,13 +4,16 @@ This microservice manages courses for the E-Learning Platform
 
 ## Related Services
 
-| Service | Description |
-|----------|--------------|
-| [Enrollment Service](https://github.com/annasergeevaGIT/enrollment-service) | Handles student enrollments |
-| [Feedback Service](https://github.com/annasergeevaGIT/feedback-service) | Manages user feedback|
-| [Course Aggregate Service](https://github.com/annasergeevaGIT/course-aggregate-service) | Aggregates course and review data |
-| [Gateway Service](../gateway-service) | Routes requests to microservices |
-| [Config Server](https://github.com/annasergeevaGIT/config-server-e-learning-platform) | Centralized configuration storage |
+| Service                                                               | Description                       |
+|-----------------------------------------------------------------------|-----------------------------------|
+| [Enrollment Service](https://github.com/annasergeevaGIT/enrollment-service-e-learning-platform)   | Manages course enrollments |
+| [Course Service](https://github.com/annasergeevaGIT/course-service-e-learning-platform)   | Handles courses and content|
+| [Feedback Service](https://github.com/annasergeevaGIT/eedback-service-e-learning-platform) | Manages ratings and feedback |
+| [Course Aggregate Service](https://github.com/annasergeevaGIT/aggregate-service-e-learning-platform)| Aggregates course and review data |
+| [Gateway Service](https://github.com/annasergeevaGIT/gateway-service-e-learning-platform)| Routing, security, rate limiting |
+| [Discovery Service](https://github.com/annasergeevaGIT/discovery-service-e-learning-platform)| Eureka Service registry |
+| [Dispatcher Service](https://github.com/annasergeevaGIT/dispatcher-service-e-learning-platform)| Kafka producer/consumer (event streaming) |
+| [Docker Deployment](https://github.com/annasergeevaGIT/dispatcher-service-e-learning-platform)| Centralized configuration management |
 
 ## Overview
 
